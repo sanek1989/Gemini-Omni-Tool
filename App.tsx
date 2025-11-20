@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Settings, ModelProvider } from './types';
 import { WelcomeView } from './components/WelcomeView';
 import { ChatView } from './components/ChatView';
@@ -12,14 +12,56 @@ const App: React.FC = () => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   
   // Global settings state
-  const [settings, setSettings] = useState<Settings>({
-    provider: ModelProvider.GEMINI,
-    // Default to the local proxy server port (3000) to avoid CORS issues with direct 11434 access
-    ollamaUrl: 'http://localhost:3000', 
-    ollamaModel: 'llama3',
-    geminiApiKey: '',
-    geminiModel: 'gemini-2.5-flash'
+  const [settings, setSettings] = useState<Settings>(() => {
+    try {
+      const storedSettings = localStorage.getItem('appSettings');
+      if (storedSettings) {
+        return JSON.parse(storedSettings);
+      }
+    } catch (error) {
+      console.error("Failed to load settings from localStorage", error);
+    }
+    return {
+      provider: ModelProvider.GEMINI,
+      ollamaUrl: 'http://localhost:3000',
+      ollamaModel: 'llama3',
+      geminiApiKey: '',
+      geminiModel: 'gemini-2.5-flash'
+    };
   });
+
+  // Effect to save settings to localStorage whenever they change
+  useEffect(() => {
+    try {
+      localStorage.setItem('appSettings', JSON.stringify(settings));
+    } catch (error) {
+      console.error("Failed to save settings to localStorage", error);
+    }
+  }, [settings]);
+  
+  // Function to validate Gemini API key
+  const validateGeminiApiKey = async (apiKey: string) => {
+    try {
+      const response = await fetch('https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-goog-api-key': apiKey,
+        },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: 'Test' }] }],
+        }),
+      });
+
+      if (response.status === 400 || response.status === 401) {
+        return false; // Invalid key
+      }
+      return true; // Valid key
+    } catch (error) {
+      console.error('API Key Validation Error:', error);
+      return false; // Network error or other issue
+    }
+  };
 
   const renderView = () => {
     switch (currentView) {
@@ -116,6 +158,7 @@ const App: React.FC = () => {
         onClose={() => setIsSettingsOpen(false)}
         settings={settings}
         onSave={setSettings}
+        validateApiKey={validateGeminiApiKey}
       />
     </div>
   );

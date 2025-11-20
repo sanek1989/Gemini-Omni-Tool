@@ -10,6 +10,7 @@ interface SettingsModalProps {
   onClose: () => void;
   settings: Settings;
   onSave: (settings: Settings) => void;
+  validateApiKey: (apiKey: string) => Promise<boolean>;
 }
 
 const DEFAULT_GEMINI_MODELS: GeminiModelEntry[] = [
@@ -21,7 +22,7 @@ const DEFAULT_GEMINI_MODELS: GeminiModelEntry[] = [
   { name: 'gemini-1.5-flash-8b', version: 'latest', displayName: 'Gemini 1.5 Flash-8B', description: 'High volume tasks' },
 ];
 
-export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, settings, onSave }) => {
+export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, settings, onSave, validateApiKey }) => {
   const [localSettings, setLocalSettings] = useState<Settings>(settings);
   
   // Ollama State
@@ -106,27 +107,26 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, s
     setGeminiError('');
 
     try {
-        const models = await fetchGeminiModels(localSettings.geminiApiKey);
-        // Merge defaults with fetched models to ensure we have a good list
-        // Prioritize fetched models if duplicates exist
-        if (models.length > 0) {
-           setAvailableGeminiModels(models);
-        }
-        setGeminiStatus('success');
+        const isValid = await validateApiKey(localSettings.geminiApiKey);
 
-        // If we have models, ensure the current selection is valid
-        if (models.length > 0) {
-            const currentExists = models.some(m => m.name === localSettings.geminiModel);
-            // We don't force switch here to allow 'custom' models that might be valid but not in list
-            if (!currentExists && !DEFAULT_GEMINI_MODELS.some(m => m.name === localSettings.geminiModel)) {
-                 // Optional: switch to first available
-                 // setLocalSettings(prev => ({ ...prev, geminiModel: models[0].name }));
+        if (isValid) {
+            const models = await fetchGeminiModels(localSettings.geminiApiKey);
+            if (models.length > 0) {
+                setAvailableGeminiModels(models);
             }
+            setGeminiStatus('success');
+            // If we have models, ensure the current selection is valid
+            if (models.length > 0) {
+                // currentExists не используется после изменения логики
+            }
+        } else {
+            setGeminiStatus('error');
+            setGeminiError('Invalid Key or Network Error.');
         }
+
     } catch (error) {
         setGeminiStatus('error');
         setGeminiError('Invalid Key or Network Error.');
-        // Fallback to defaults is already handled by initial state
     } finally {
         setIsLoadingGeminiModels(false);
     }

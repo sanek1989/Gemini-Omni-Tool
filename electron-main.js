@@ -1,4 +1,4 @@
-const { app, BrowserWindow, dialog } = require('electron');
+const { app, BrowserWindow, dialog, session } = require('electron');
 const path = require('path');
 const { autoUpdater } = require('electron-updater');
 
@@ -15,6 +15,21 @@ try {
 
 let mainWindow;
 
+// Configure proxy settings and network access
+app.commandLine.appendSwitch('proxy-bypass-list', '<local>;127.0.0.1;localhost');
+app.commandLine.appendSwitch('ignore-certificate-errors');
+app.commandLine.appendSwitch('ignore-ssl-errors', 'true');
+
+// Configure session to allow network requests
+app.whenReady().then(() => {
+  session.defaultSession.setProxy({
+    proxyRules: '',
+    proxyBypassRules: '<local>;127.0.0.1;localhost'
+  }).then(() => {
+    console.log('Proxy configured for network access');
+  });
+});
+
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1280,
@@ -26,9 +41,17 @@ function createWindow() {
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
-      // Security: In a real app, configure CSP. 
+      // Security: In a real app, configure CSP.
       // For this local tool, we allow local resources.
-      webSecurity: false 
+      webSecurity: false,
+      // Enable network access for API requests
+      webviewTag: true,
+      allowRunningInsecureContent: true,
+      experimentalFeatures: true,
+      // Allow all permissions for external requests
+      enableRemoteModule: false,
+      nativeWindowOpen: true,
+      sandbox: false
     }
   });
 

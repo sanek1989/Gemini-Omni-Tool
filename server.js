@@ -15,8 +15,116 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const OLLAMA_HOST = process.env.OLLAMA_HOST || 'http://127.0.0.1:11434';
 
-app.use(cors());
+app.use(cors({
+  origin: ['http://localhost:5173', 'http://localhost:3000', 'http://127.0.0.1'],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'User-Agent']
+}));
+
+// Handle preflight OPTIONS requests
+app.options('*', (req, res) => {
+  res.header('Access-Control-Allow-Origin', req.headers.origin);
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, User-Agent');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  res.sendStatus(200);
+});
 app.use(express.json({ limit: '50mb' }));
+
+// Add Google AI API proxy
+app.post('/api/gemini/chat', async (req, res) => {
+  try {
+    const { message, history, apiKey } = req.body;
+    
+    if (!apiKey) {
+      return res.status(400).json({ error: 'API Key is required' });
+    }
+
+    const response = await fetch('https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`
+      },
+      body: JSON.stringify({
+        contents: [
+          {
+            parts: [
+              {
+                text: message
+              }
+            ]
+          }
+        ]
+      })
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(`Google AI API Error (${response.status}): ${errorData.error?.message || response.statusText}`);
+    }
+
+    const data = await response.json();
+    res.json(data);
+  } catch (error) {
+    console.error('Google AI API Error:', error.message);
+    res.status(500).json({
+      error: 'Failed to connect to Google AI API',
+      details: error.message
+    });
+  }
+});
+
+// Add Google AI Vision API proxy
+app.post('/api/gemini/vision', async (req, res) => {
+  try {
+    const { image, prompt, apiKey } = req.body;
+    
+    if (!apiKey) {
+      return res.status(400).json({ error: 'API Key is required' });
+    }
+
+    const response = await fetch('https://generativelanguage.googleapis.com/v1/models/gemini-pro-vision:generateContent', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`
+      },
+      body: JSON.stringify({
+        contents: [
+          {
+            parts: [
+              {
+                inlineData: {
+                  mimeType: image.mimeType,
+                  data: image.data
+                }
+              },
+              {
+                text: prompt
+              }
+            ]
+          }
+        ]
+      })
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(`Google AI API Error (${response.status}): ${errorData.error?.message || response.statusText}`);
+    }
+
+    const data = await response.json();
+    res.json(data);
+  } catch (error) {
+    console.error('Google AI Vision API Error:', error.message);
+    res.status(500).json({
+      error: 'Failed to connect to Google AI Vision API',
+      details: error.message
+    });
+  }
+});
 
 // Serve static files from the Vite build output directory ('dist')
 // When running in dev mode via 'npm run dev', this server is mostly used for API proxying,
@@ -112,6 +220,37 @@ server.on('error', (e) => {
   } else {
     console.error('Server error:', e);
   }
+});
+
+// Proxy requests to Google Generative AI API
+app.post('/api/google-genai', async (req, res) => {
+    try {
+        const { apiUrl, apiKey, body } = req.body;
+
+        if (!apiUrl || !apiKey || !body) {
+            return res.status(400).json({ error: 'Missing required parameters for proxy.' });
+        }
+
+        const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'x-goog-api-key': apiKey,
+            },
+            body: JSON.stringify(body),
+        });
+
+        if (!response.ok) {
+            console.error('Google API Error:', data);
+            return res.status(response.status).json(data);
+        }
+
+        const data = await response.json();
+        res.json(data);
+    } catch (error) {
+        console.error('Proxy to Google GenAI Error:', error.message);
+        res.status(500).json({ error: 'Failed to proxy request to Google GenAI.', details: error.message });
+    }
 });
 
 module.exports = app;
