@@ -1,0 +1,53 @@
+{
+  "name": "gemini-omni-tool",
+  "version": "1.0.0",
+  "description": "A comprehensive AI tool with Gemini and local Ollama support",
+  "main": "electron-main.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "electron .",
+    "build": "electron-builder",
+    "postinstall": "electron-builder install-app-deps"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/YOUR_GITHUB_USERNAME/YOUR_REPO_NAME.git"
+  },
+  "author": "The Angel Studio",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "electron-updater": "^6.1.7",
+    "express": "^4.18.2",
+    "node-fetch": "^2.7.0"
+  },
+  "devDependencies": {
+    "electron": "^28.2.0",
+    "electron-builder": "^24.9.1"
+  },
+  "build": {
+    "appId": "com.angelstudio.geminiomni",
+    "productName": "Gemini Omni-Tool",
+    "win": {
+      "target": "nsis",
+      "icon": "icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "YOUR_GITHUB_USERNAME",
+        "repo": "YOUR_REPO_NAME"
+      }
+    ],
+    "files": [
+      "**/*",
+      "!dist/*",
+      "!node_modules/.cache/*"
+    ]
+  }
+}

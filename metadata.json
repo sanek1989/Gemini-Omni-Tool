@@ -1,0 +1,5 @@
+{
+  "name": "Gemini Omni-Tool",
+  "description": "A comprehensive demonstration of Gemini 2.5 capabilities including chat, reasoning, and computer vision.",
+  "requestFramePermissions": []
+}
