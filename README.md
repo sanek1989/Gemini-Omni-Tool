@@ -1,85 +1,73 @@
 # Gemini Omni-Tool
 
-A powerful, modern AI interface capable of switching between Google's Gemini models (Cloud) and local Ollama models (Local).
+**The Ultimate AI Interface: Google Gemini (Cloud) + Ollama (Local)**
 
-**Made by The Angel Studio**
+Created by **The Angel Studio**
 
-## Features
-
-*   **Dual Provider Support:**
-    *   **Google Gemini:** Access the latest Gemini 1.5, 2.0, and 3.0 models with your API key.
-    *   **Local Ollama:** Run Llama 3, Mistral, Llava, and other models locally on your machine for privacy and offline use.
-*   **Chat Interface:** Full markdown support, code highlighting, and conversation history.
-*   **Vision Capabilities:** Analyze images using Gemini Vision or multimodal local models (like Llava).
-*   **Desktop Application:** Built with Electron for a native experience on Windows.
-*   **Auto-Updates:** Built-in support for automatic updates via GitHub Releases.
-
-## Prerequisites
-
-1.  **Node.js:** Install Node.js (v16 or higher) from [nodejs.org](https://nodejs.org/).
-2.  **Ollama (Optional):** For local model support, install [Ollama](https://ollama.com/) and pull your desired models (e.g., `ollama run llama3`).
-
-## Installation (Development)
-
-1.  Clone the repository:
-    ```bash
-    git clone https://github.com/sanek1989/Gemini-Omni-Tool.git
-    cd Gemini-Omni-Tool
-    ```
-
-2.  Install dependencies:
-    ```bash
-    npm install
-    ```
-
-3.  Run in development mode (starts the server and opens Electron):
-    ```bash
-    npm run dev
-    ```
-
-## Building the Desktop App (.exe)
-
-To create a standalone Windows installer (`.exe`) with auto-update support:
-
-1.  **Verify Configuration:** The `package.json` is already configured for the repository `sanek1989/Gemini-Omni-Tool`.
-
-2.  Run the build command:
-    ```bash
-    npm run build
-    ```
-
-3.  The installer will be created in the `dist/` folder (e.g., `Gemini Omni-Tool Setup 1.0.0.exe`).
-
-## Configuring Auto-Updates
-
-For users to receive updates automatically:
-
-1.  Push your changes to GitHub.
-2.  **Important:** You need to create a **GitHub Token** (Personal Access Token) with `repo` scope if you want to publish directly from the command line, OR simply upload the artifacts manually to GitHub Releases.
-3.  Draft a new **Release** on GitHub (e.g., tag `v1.0.1`).
-4.  Upload the generated `.exe` and `.blockmap` files from the `dist/` folder to the release assets.
-5.  Publish the release.
-6.  The app will automatically detect the new version upon launch and prompt the user to update.
-
-## Usage
-
-### Using Gemini (Cloud)
-1.  Go to Settings.
-2.  Select **Google Gemini**.
-3.  Enter your [Google AI Studio API Key](https://aistudio.google.com/app/apikey).
-4.  The app will automatically fetch available models.
-
-### Using Ollama (Local)
-1.  Ensure Ollama is running (`ollama serve`).
-2.  Go to Settings.
-3.  Select **Local Ollama**.
-4.  The app attempts to connect to `http://localhost:3000` (which proxies to port 11434).
-5.  Select your model from the dropdown.
-
-## Troubleshooting
-
-*   **"Failed to fetch" (Ollama):** Ensure the background server is running. If running via `npm run dev` or the installed `.exe`, this is handled automatically. If running manually, execute `node server.js`.
-*   **CORS Errors:** The app uses a local proxy server (port 3000) to communicate with Ollama to avoid CORS issues. Ensure you are pointing settings to `http://localhost:3000`.
+Gemini Omni-Tool is a desktop application that combines the power of Google's cloud-based Gemini models with the privacy and offline capabilities of local LLMs via Ollama.
 
 ---
-License: MIT
+
+## 📥 For Users (How to Install & Run)
+
+**You do NOT need Node.js or any other software installed to use this program.**
+
+1.  **Download:** Go to the [Releases Page](https://github.com/sanek1989/Gemini-Omni-Tool/releases) (once published).
+2.  **Choose your version:**
+    *   **Installer (`Gemini Omni-Tool Setup X.X.X.exe`):** Recommended. Installs the app to your system and supports **automatic updates**.
+    *   **Portable (`Gemini Omni-Tool Portable X.X.X.exe`):** A single file you can run from anywhere (USB stick, desktop folder). No installation required.
+3.  **Run:** Double-click the `.exe` file.
+4.  **Setup AI:**
+    *   **Gemini:** Click Settings -> Enter your [Google API Key](https://aistudio.google.com/app/apikey).
+    *   **Ollama:** Install [Ollama](https://ollama.com/) separately if you want to use local models, then run `ollama serve` in a terminal.
+
+---
+
+## 🛠 For Developers (How to Build from Source)
+
+If you want to modify the code or build the `.exe` files yourself, follow these steps.
+
+### Prerequisites
+*   **Node.js:** (Version 16+) [Download here](https://nodejs.org/).
+*   **Git:** [Download here](https://git-scm.com/).
+
+### 1. Install & Setup
+```bash
+# Clone the repository
+git clone https://github.com/sanek1989/Gemini-Omni-Tool.git
+cd Gemini-Omni-Tool
+
+# Install dependencies (This downloads libraries to the local project folder only)
+npm install
+```
+
+### 2. Development Mode
+To run the app locally for testing:
+```bash
+npm run dev
+```
+
+### 3. Build Executables
+To create the `.exe` files for distribution:
+```bash
+npm run build
+```
+*   **Output:** Check the `dist/` folder.
+*   You will find both the **Installer** and the **Portable** versions there.
+
+### 4. Configuring Auto-Update
+1.  Push your code changes to GitHub.
+2.  Create a **New Release** on GitHub.
+3.  Upload the `.exe` files from the `dist/` folder to the release assets.
+4.  The application (Installer version) will automatically detect the new version and prompt users to update.
+
+---
+
+## 🚀 Features
+*   **Dual Mode:** Switch instantly between Gemini (Fast, Smart, Cloud) and Ollama (Private, Local, Uncensored).
+*   **Vision Support:** Analyze images using Gemini Vision or LLaVA (Local).
+*   **Auto-Updates:** Stay up to date effortlessly.
+*   **Portable:** Run without admin rights or installation.
+
+## License
+MIT License

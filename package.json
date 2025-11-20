@@ -29,13 +29,21 @@
     "appId": "com.angelstudio.geminiomni",
     "productName": "Gemini Omni-Tool",
     "win": {
-      "target": "nsis",
+      "target": [
+        "nsis",
+        "portable"
+      ],
       "icon": "icon.ico"
     },
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
-      "createDesktopShortcut": true
+      "createDesktopShortcut": true,
+      "deleteAppDataOnUninstall": true
+    },
+    "portable": {
+      "artifactName": "${productName} Portable ${version}.${ext}",
+      "requestExecutionLevel": "user"
     },
     "publish": [
       {
