@@ -287,7 +287,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, s
                     type="text"
                     value={localSettings.ollamaUrl}
                     onChange={(e) => setLocalSettings({ ...localSettings, ollamaUrl: e.target.value })}
-                    placeholder="http://localhost:11434"
+                    placeholder="http://localhost:3000 (Local Proxy)"
                     className={`flex-1 bg-slate-950 border rounded-lg px-3 py-2 text-slate-200 text-sm focus:ring-2 focus:outline-none ${
                       ollamaStatus === 'error' ? 'border-red-500/50 focus:ring-red-500' : 'border-slate-700 focus:ring-orange-500'
                     }`}
@@ -305,7 +305,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, s
                   <p className="text-[10px] text-red-400 mt-1">{ollamaError}</p>
                 )}
                 <p className="text-[10px] text-slate-500">
-                  Default: <code>http://localhost:11434</code>. If using the local proxy server (server.js), try <code>/</code> or <code>http://localhost:3000</code>.
+                  Если вы используете локальный прокси-сервер (server.js), укажите <code>http://localhost:3000</code> или <code>/</code>.
+                  Прямое подключение к Ollama: <code>http://localhost:11434</code> (требует отдельной настройки CORS для Ollama).
                 </p>
               </div>
 

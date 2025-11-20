@@ -23,7 +23,7 @@ const App: React.FC = () => {
     }
     return {
       provider: ModelProvider.GEMINI,
-      ollamaUrl: 'http://localhost:3000',
+      ollamaUrl: 'http://localhost:11434',
       ollamaModel: 'llama3',
       geminiApiKey: '',
       geminiModel: 'gemini-2.5-flash'

@@ -156,6 +156,9 @@ app.post('/api/chat', async (req, res) => {
     res.json(data);
   } catch (error) {
     console.error('Proxy Chat Error:', error.message);
+    if (error.code === 'ECONNREFUSED') {
+        console.error(`Attempted to connect to Ollama at ${OLLAMA_HOST}, but connection was refused. Is Ollama running and accessible?`);
+    }
     res.status(500).json({ error: 'Failed to connect to local Ollama instance via proxy.', details: error.message });
   }
 });
@@ -178,6 +181,9 @@ app.post('/api/generate', async (req, res) => {
     res.json(data);
   } catch (error) {
     console.error('Proxy Vision Error:', error.message);
+    if (error.code === 'ECONNREFUSED') {
+        console.error(`Attempted to connect to Ollama at ${OLLAMA_HOST}, but connection was refused. Is Ollama running and accessible?`);
+    }
     res.status(500).json({ error: 'Failed to connect to local Ollama instance via proxy.', details: error.message });
   }
 });
@@ -197,7 +203,7 @@ app.get('/api/tags', async (req, res) => {
   } catch (error) {
     console.error('Proxy Tags Error:', error.message);
     if (error.code === 'ECONNREFUSED') {
-        console.error(`Make sure Ollama is running at ${OLLAMA_HOST}`);
+        console.error(`Attempted to connect to Ollama at ${OLLAMA_HOST}, but connection was refused. Is Ollama running and accessible?`);
     }
     res.status(500).json({ error: 'Failed to connect to local Ollama instance via proxy.', details: error.message });
   }

@@ -19,7 +19,7 @@ export const generateOllamaChatResponse = async (
     messages.push({ role: 'user', content: currentMessage });
 
     // Use URL from settings or fallback to relative path if using proxy
-    const baseUrl = settings.ollamaUrl.replace(/\/$/, '');
+    const baseUrl = settings.ollamaUrl.includes('11434') ? '' : settings.ollamaUrl.replace(/\/$/, '');
     const endpoint = `${baseUrl}/api/chat`;
 
     const response = await fetch(endpoint, {
@@ -61,7 +61,7 @@ export const analyzeOllamaImage = async (
 ): Promise<string> => {
   try {
     const cleanBase64 = base64Data.split(',')[1];
-    const baseUrl = settings.ollamaUrl.replace(/\/$/, '');
+    const baseUrl = settings.ollamaUrl.includes('11434') ? '' : settings.ollamaUrl.replace(/\/$/, '');
     const endpoint = `${baseUrl}/api/generate`;
 
     const response = await fetch(endpoint, {
@@ -94,7 +94,7 @@ export const analyzeOllamaImage = async (
  */
 export const fetchOllamaModels = async (url: string): Promise<OllamaModelEntry[]> => {
   try {
-    const baseUrl = url.replace(/\/$/, '');
+    const baseUrl = url.includes('11434') ? '' : url.replace(/\/$/, '');
     const endpoint = `${baseUrl}/api/tags`;
 
     const response = await fetch(endpoint);
