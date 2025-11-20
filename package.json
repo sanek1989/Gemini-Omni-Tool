@@ -1,13 +1,15 @@
 {
   "name": "gemini-omni-tool",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A comprehensive AI tool with Gemini and local Ollama support",
   "main": "electron-main.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "electron .",
-    "build": "electron-builder",
-    "postinstall": "electron-builder install-app-deps"
+    "dev": "concurrently -k \"npm run vite\" \"npm run electron\"",
+    "vite": "vite",
+    "electron": "wait-on tcp:5173 && electron .",
+    "build": "tsc && vite build && electron-builder",
+    "postinstall": "electron-builder install-app-deps",
+    "start": "node server.js"
   },
   "repository": {
     "type": "git",
@@ -19,11 +21,24 @@
     "cors": "^2.8.5",
     "electron-updater": "^6.1.7",
     "express": "^4.18.2",
-    "node-fetch": "^2.7.0"
+    "lucide-react": "^0.344.0",
+    "node-fetch": "^2.7.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-markdown": "^9.0.1",
+    "@google/genai": "^0.1.1"
   },
   "devDependencies": {
-    "electron": "^28.2.0",
-    "electron-builder": "^24.9.1"
+    "@types/node": "^20.11.24",
+    "@types/react": "^18.2.61",
+    "@types/react-dom": "^18.2.19",
+    "@vitejs/plugin-react": "^4.2.1",
+    "concurrently": "^8.2.2",
+    "electron": "^29.1.0",
+    "electron-builder": "^24.13.3",
+    "typescript": "^5.3.3",
+    "vite": "^5.1.4",
+    "wait-on": "^7.2.0"
   },
   "build": {
     "appId": "com.angelstudio.geminiomni",
@@ -53,9 +68,10 @@
       }
     ],
     "files": [
-      "**/*",
-      "!dist/*",
-      "!node_modules/.cache/*"
+      "dist/**/*",
+      "server.js",
+      "electron-main.js",
+      "package.json"
     ]
   }
 }

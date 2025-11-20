@@ -12,23 +12,21 @@ const fetch = global.fetch || require('node-fetch');
 
 const app = express();
 // Use 3000 by default, or allow Electron/Env to set it. 
-// In a real desktop app, might want to find a free port dynamically.
 const PORT = process.env.PORT || 3000;
 const OLLAMA_HOST = process.env.OLLAMA_HOST || 'http://127.0.0.1:11434';
 
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 
-// Serve static files
-app.use(express.static(__dirname));
+// Serve static files from the Vite build output directory ('dist')
+// When running in dev mode via 'npm run dev', this server is mostly used for API proxying,
+// as Vite serves the frontend on port 5173.
+// In production (packaged app), this server serves the static files.
+app.use(express.static(path.join(__dirname, 'dist')));
 
 // Health Check
-app.get('/', (req, res, next) => {
-  if (req.accepts('html')) {
-    res.sendFile(path.join(__dirname, 'index.html'));
-  } else {
-    res.json({ status: 'ok', message: 'Ollama Proxy Server is Running', ollamaHost: OLLAMA_HOST });
-  }
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok', message: 'Ollama Proxy Server is Running', ollamaHost: OLLAMA_HOST });
 });
 
 // Proxy Chat requests to Ollama
@@ -45,6 +43,7 @@ app.post('/api/chat', async (req, res) => {
        throw new Error(`Ollama API Error (${response.status}): ${errText}`);
     }
     
+    // Stream response handling could be added here, for now we assume JSON
     const data = await response.json();
     res.json(data);
   } catch (error) {
@@ -96,15 +95,14 @@ app.get('/api/tags', async (req, res) => {
   }
 });
 
-// Fallback for SPA
+// Fallback for SPA: Serve index.html for any unknown routes
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
+  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
 // Only listen if this file is run directly, OR if required by Electron but we handle the server start logic
-// To prevent "EADDRINUSE" errors in some environments, we add error handling
 const server = app.listen(PORT, () => {
-  console.log(`\n🚀 Server running at http://localhost:${PORT}`);
+  console.log(`\n🚀 Backend Server running at http://localhost:${PORT}`);
   console.log(`🔗 Proxying Ollama requests to ${OLLAMA_HOST}`);
 });
 
@@ -116,4 +114,4 @@ server.on('error', (e) => {
   }
 });
 
-module.exports = app; // Export for Electron usage if needed
+module.exports = app;

@@ -2,13 +2,12 @@ const { app, BrowserWindow, dialog } = require('electron');
 const path = require('path');
 const { autoUpdater } = require('electron-updater');
 
-// Import the server module to run it within the Electron process
-// We use a try-catch block to handle potential server startup issues
+// Start the internal server
+// In production, this server serves the built React files from 'dist'
+// In development, it provides the API proxy, while Vite serves the frontend
 let serverInstance;
 try {
-  // Check if we are in production resources or local
   const serverPath = path.join(__dirname, 'server.js');
-  console.log('Starting local server from:', serverPath);
   serverInstance = require(serverPath);
 } catch (e) {
   console.error('Failed to start internal server:', e);
@@ -23,32 +22,43 @@ function createWindow() {
     minWidth: 1024,
     minHeight: 768,
     title: "Gemini Omni-Tool",
-    backgroundColor: '#020617', // Matches slate-950
+    backgroundColor: '#020617',
     webPreferences: {
-      nodeIntegration: false, // Security best practice
+      nodeIntegration: false,
       contextIsolation: true,
-      webSecurity: false // Allow loading local resources if needed, though we use localhost
+      // Security: In a real app, configure CSP. 
+      // For this local tool, we allow local resources.
+      webSecurity: false 
     }
   });
 
-  // The server.js starts on port 3000 (or env PORT). 
-  // We load the localhost URL.
-  // We add a small delay to ensure Express is listening.
-  setTimeout(() => {
-    mainWindow.loadURL('http://localhost:3000');
-  }, 1000);
+  const isDev = !app.isPackaged;
 
-  // Open links in external browser
+  if (isDev) {
+    // In development, load from Vite dev server
+    // The 'wait-on' script in package.json ensures this port is ready before Electron launches
+    mainWindow.loadURL('http://localhost:5173');
+    // Open DevTools
+    mainWindow.webContents.openDevTools();
+  } else {
+    // In production, load from the local Express server (which serves 'dist')
+    // We use a small timeout to ensure Express has bound to the port
+    setTimeout(() => {
+      mainWindow.loadURL('http://localhost:3000');
+    }, 500);
+  }
+
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
     require('electron').shell.openExternal(url);
     return { action: 'deny' };
   });
 
-  // Auto Update Events
-  autoUpdater.checkForUpdatesAndNotify();
+  // Only check for updates if packaged
+  if (app.isPackaged) {
+    autoUpdater.checkForUpdatesAndNotify();
+  }
 }
 
-// App Lifecycle
 app.whenReady().then(() => {
   createWindow();
 
@@ -61,7 +71,6 @@ app.on('window-all-closed', function () {
   if (process.platform !== 'darwin') app.quit();
 });
 
-// Auto Updater Event Listeners
 autoUpdater.on('update-available', () => {
   dialog.showMessageBox(mainWindow, {
     type: 'info',
