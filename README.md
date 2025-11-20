@@ -23,8 +23,8 @@ A powerful, modern AI interface capable of switching between Google's Gemini mod
 
 1.  Clone the repository:
     ```bash
-    git clone https://github.com/YOUR_USERNAME/YOUR_REPO_NAME.git
-    cd gemini-omni-tool
+    git clone https://github.com/sanek1989/Gemini-Omni-Tool.git
+    cd Gemini-Omni-Tool
     ```
 
 2.  Install dependencies:
@@ -41,20 +41,7 @@ A powerful, modern AI interface capable of switching between Google's Gemini mod
 
 To create a standalone Windows installer (`.exe`) with auto-update support:
 
-1.  **Important:** Open `package.json` and update the repository URL and author fields to match your GitHub repository:
-    ```json
-    "repository": {
-      "type": "git",
-      "url": "https://github.com/YOUR_GITHUB_USERNAME/YOUR_REPO_NAME.git"
-    },
-    "publish": [
-      {
-        "provider": "github",
-        "owner": "YOUR_GITHUB_USERNAME",
-        "repo": "YOUR_REPO_NAME"
-      }
-    ]
-    ```
+1.  **Verify Configuration:** The `package.json` is already configured for the repository `sanek1989/Gemini-Omni-Tool`.
 
 2.  Run the build command:
     ```bash
@@ -67,12 +54,12 @@ To create a standalone Windows installer (`.exe`) with auto-update support:
 
 For users to receive updates automatically:
 
-1.  Push your code to the GitHub repository specified in `package.json`.
-2.  Create a **GitHub Token** with `repo` permissions and set it as an environment variable `GH_TOKEN` on your build machine (required if you want `electron-builder` to publish directly, otherwise you can manually upload artifacts).
-3.  Draft a new **Release** on GitHub.
+1.  Push your changes to GitHub.
+2.  **Important:** You need to create a **GitHub Token** (Personal Access Token) with `repo` scope if you want to publish directly from the command line, OR simply upload the artifacts manually to GitHub Releases.
+3.  Draft a new **Release** on GitHub (e.g., tag `v1.0.1`).
 4.  Upload the generated `.exe` and `.blockmap` files from the `dist/` folder to the release assets.
 5.  Publish the release.
-6.  The app will automatically detect the new version upon launch.
+6.  The app will automatically detect the new version upon launch and prompt the user to update.
 
 ## Usage
 

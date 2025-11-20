@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/YOUR_GITHUB_USERNAME/YOUR_REPO_NAME.git"
+    "url": "https://github.com/sanek1989/Gemini-Omni-Tool.git"
   },
   "author": "The Angel Studio",
   "license": "MIT",
@@ -40,8 +40,8 @@
     "publish": [
       {
         "provider": "github",
-        "owner": "YOUR_GITHUB_USERNAME",
-        "repo": "YOUR_REPO_NAME"
+        "owner": "sanek1989",
+        "repo": "Gemini-Omni-Tool"
       }
     ],
     "files": [
